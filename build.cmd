@@ -1,0 +1,1 @@
+pyinstaller main.pyw --onefile --name=eth_price_monitor --icon=icon.png
