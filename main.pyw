@@ -7,11 +7,11 @@ from datetime import datetime
 import json
 import os
 
-CONFIG_FILENAME = "eth_alarm_config.json"
+CONFIG_FILENAME = "btc_alarm_config.json"
 UPDATE_INTERVAL = 10  # seconds
 
 
-class EthereumPriceMonitor:
+class BitcoinPriceMonitor:
     def __init__(self):
         # Initial configuration
         self.current_price = 0.0
@@ -19,7 +19,7 @@ class EthereumPriceMonitor:
         self.price_change_threshold = 1.0  # 1%
         self.last_update = ""
         self.running = True
-        self.image = Image.open("icon.png")
+        self.image = Image.open("icon")
         self.load_config()
 
         # Start the price monitoring thread
@@ -49,9 +49,9 @@ class EthereumPriceMonitor:
         with open(CONFIG_FILENAME, "w") as f:
             json.dump(config, f)
 
-    def get_eth_price(self):
+    def get_btc_price(self):
         try:
-            url = "https://www.okx.com/api/v5/market/ticker?instId=ETH-USDT"
+            url = "https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT"
             response = requests.get(url)
             data = response.json()
 
@@ -85,11 +85,11 @@ class EthereumPriceMonitor:
 
     def monitor_price(self):
         while self.running:
-            if self.get_eth_price():
+            if self.get_btc_price():
                 # Check for alert condition
                 if self.check_alert_condition():
                     self.tray_icon.notify(
-                        f"Price Alert: ETH changed by {self.calculate_change():.2f}% and is now at ${self.current_price:.2f}!"
+                        f"Price Alert: BTC changed by {self.calculate_change():.2f}% and is now at ${self.current_price:.1f}!"
                     )
                     # Update reference price to current price when alert triggers
                     self.reference_price = self.current_price
@@ -112,14 +112,14 @@ class EthereumPriceMonitor:
         menu_items = [
             pystray.MenuItem(
                 (
-                    f"ETH Price: ${self.current_price:.2f}"
+                    f"BTC Price: ${self.current_price:.1f}"
                     if self.current_price > 0
                     else "Loading price..."
                 ),
                 lambda icon, item: None,
             ),
             pystray.MenuItem(
-                f"Reference: ${self.reference_price:.2f}", lambda icon, item: None
+                f"Ref. Price: ${self.reference_price:.1f}", lambda icon, item: None
             ),
             pystray.MenuItem(
                 f"Change: {self.calculate_change():+.2f}%", lambda icon, item: None
@@ -158,16 +158,16 @@ class EthereumPriceMonitor:
 
     def create_tray_icon(self):
         self.tray_icon = pystray.Icon(
-            "eth_price_monitor",
+            "btc_price_monitor",
             icon=self.image,
             menu=self.create_tray_menu(),
-            title="Ethereum Price Monitor",
+            title="Bitcoin Price Monitor",
         )
         self.tray_icon.run()
 
 
 if __name__ == "__main__":
-    monitor = EthereumPriceMonitor()
+    monitor = BitcoinPriceMonitor()
 
 
 # Fix the menu bug (kinda hard tho)

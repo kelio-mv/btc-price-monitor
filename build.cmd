@@ -1,1 +1,1 @@
-pyinstaller main.pyw --onefile --name=eth_price_monitor --icon=icon.png
+pyinstaller main.pyw --onefile --name=btc_price_monitor --icon=icon
